@@ -16,6 +16,7 @@ sub get_backlinks_from_files {
             open( my $fh, "<", $filename ) or die;
             my $content = <$fh>;
             close $fh;
+            $/ = "\n";
 
             my $links = $self->get_links($content);
 
@@ -29,9 +30,7 @@ sub get_backlinks_from_files {
 
 sub get_links {
     my ( $self, $text ) = @_;
-    my @link_ids = uniq ( $text =~ /\[\[(\d*)\]\]/g );
-
-
+    my @link_ids = uniq( $text =~ /\[\[(\d*)\]\]/g );
 
     return \@link_ids;
 }
@@ -40,11 +39,8 @@ sub get_file_list {
     my ( $self, $directory ) = @_;
     my @files;
 
-
     opendir( my $dh, $directory ) || die "Can't open $directory: $!";
-    #@files = grep { /^\d{14}.*\.md$/ && -f "$_" } readdir($dh);
-    #@files = readdir($dh);
-    for my $file (readdir($dh)) {
+    for my $file ( readdir($dh) ) {
         next if $file =~ m/^\./;
         next unless $file =~ m/^\d{14}/;
         next unless $file =~ m/\.md$/;
@@ -53,6 +49,44 @@ sub get_file_list {
     closedir $dh;
 
     return \@files;
+}
+
+sub get_file_title {
+    my ( $self, $filename ) = @_;
+    my $output;
+
+    open( my $fh, "<", $filename ) or die;
+    for my $line (<$fh>) {
+        $line =~ s/^# //;
+        chomp $line;
+        $output = $line;
+        last;
+    }
+    close $fh;
+
+    return $output;
+}
+
+sub insert_backlinks {
+    my ( $self, $filename, @link_ids ) =@_;
+
+    $/ = undef;
+    open( my $fh, "<", $filename ) or die "unable to open $filename", $!;
+    my $content = <$fh>;
+    close $fh;
+    $/ = "\n";
+
+
+    $content .= "\n";
+    $content .= "Zettlr-Backlinks:\n";
+    for my $link (@link_ids) {
+        $content .= " * [[$link]]\n";
+    }
+    $content .= "\n";
+
+    open( $fh, ">", $filename ) or die "unable to open $filename", $!;
+    print $fh $content;
+    close $fh;
 }
 
 1;

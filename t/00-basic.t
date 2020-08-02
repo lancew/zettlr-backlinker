@@ -56,7 +56,7 @@ subtest 'Zettlr::Backlinker->get_file_list' => sub {
 subtest 'Zettlr::Backlinker->get_links' => sub {
     is $CLASS->get_links($file_1_content),
         [ '20200716164925', '20200802022902', '20200716164911' ],
-        'Got the correct two links';
+        'Got the correct three links';
 
     is $CLASS->get_links($file_2_content), [],
         'Returns empty array when no links found in text';
@@ -71,11 +71,36 @@ subtest 'Zettlr::Backlinker->backlinks_from_files' => sub {
 
     is $CLASS->get_backlinks_from_files(@filenames), {
         '20200716164925 some file.md' =>
-            [ '20200716164925', '20200802022902','20200716164911' ],
+            [ '20200716164925', '20200802022902', '20200716164911' ],
         '20200802022902 another file.md' => [],
 
     };
 
 };
-done_testing;
 
+subtest 'Zettlr::Backlinker->get_file_title' => sub {
+    is $CLASS->get_file_title('20200716164925 some file.md'),
+        'This is the first file',
+        'Retrieves the title from first line of the file and removes the "# " at the beginning and the "\n" at the end';
+
+};
+
+subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
+    $CLASS->insert_backlinks(
+        '20200802022902 another file.md',
+        ( '20200716164925', '20200716164911' )
+    );
+
+    $/ = undef;
+    open( my $fh, "<", '20200802022902 another file.md' ) or die;
+    my $content = <$fh>;
+    close $fh;
+    $/ = "\n";
+
+    is $content,
+        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
+        'The backlinks were inserted properly, the first time';
+
+};
+
+done_testing;
