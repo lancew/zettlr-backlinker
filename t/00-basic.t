@@ -101,6 +101,27 @@ subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
         "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
         'The backlinks were inserted properly, the first time';
 
+
+
+
+
+
+    $CLASS->insert_backlinks(
+        '20200802022902 another file.md',
+        ( '20200716164925', '20200716164911' )
+    );
+
+    $/ = undef;
+    open( $fh, "<", '20200802022902 another file.md' ) or die;
+    $content = <$fh>;
+    close $fh;
+    $/ = "\n";
+
+    is $content,
+        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
+        'The backlinks were inserted properly, the second time';
+
 };
 
 done_testing;
+

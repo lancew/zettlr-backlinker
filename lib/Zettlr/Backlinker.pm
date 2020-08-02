@@ -77,9 +77,17 @@ sub insert_backlinks {
     $/ = "\n";
 
 
+    #TODO: Magic number: "-1" means not found, i.e. links not already there
+    my $backlink_index = index($content, "\nZettlr-Backlinks");
+
+    if ($backlink_index > 0) {
+        $content = substr($content, 0, $backlink_index);
+    }
+
     $content .= "\n";
     $content .= "Zettlr-Backlinks:\n";
     for my $link (@link_ids) {
+        # TODO: add the file title after the link i.e. "[[12345678901234]] some thing interesting"
         $content .= " * [[$link]]\n";
     }
     $content .= "\n";
