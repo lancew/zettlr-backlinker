@@ -12,11 +12,7 @@ sub get_backlinks_from_files {
 
     for my $filename (@filenames) {
         if ( $filename =~ /\d{14}/ ) {
-            $/ = undef;
-            open( my $fh, "<", $filename ) or die;
-            my $content = <$fh>;
-            close $fh;
-            $/ = "\n";
+            my $content = $self->get_file_contents($filename);
 
             my $links = $self->get_links($content);
 
@@ -68,7 +64,33 @@ sub get_file_title {
 }
 
 sub insert_backlinks {
-    my ( $self, $filename, @link_ids ) =@_;
+    my ( $self, $filename, @link_ids ) = @_;
+
+    my $content = $self->get_file_contents($filename);
+
+    #TODO: Magic number: "-1" means not found, i.e. links not already there
+    my $backlink_index = index( $content, "\nZettlr-Backlinks" );
+
+    if ( $backlink_index > 0 ) {
+        $content = substr( $content, 0, $backlink_index );
+    }
+
+    $content .= "\n";
+    $content .= "Zettlr-Backlinks:\n";
+    for my $link (@link_ids) {
+    # TODO: add the file title after the link
+    #       i.e. "[[12345678901234]] some thing interesting"
+        $content .= " * [[$link]]\n";
+    }
+    $content .= "\n";
+
+    open( my $fh, ">", $filename ) or die "unable to open $filename", $!;
+    print $fh $content;
+    close $fh;
+}
+
+sub get_file_contents {
+    my ( $self, $filename ) = @_;
 
     $/ = undef;
     open( my $fh, "<", $filename ) or die "unable to open $filename", $!;
@@ -76,25 +98,7 @@ sub insert_backlinks {
     close $fh;
     $/ = "\n";
 
-
-    #TODO: Magic number: "-1" means not found, i.e. links not already there
-    my $backlink_index = index($content, "\nZettlr-Backlinks");
-
-    if ($backlink_index > 0) {
-        $content = substr($content, 0, $backlink_index);
-    }
-
-    $content .= "\n";
-    $content .= "Zettlr-Backlinks:\n";
-    for my $link (@link_ids) {
-        # TODO: add the file title after the link i.e. "[[12345678901234]] some thing interesting"
-        $content .= " * [[$link]]\n";
-    }
-    $content .= "\n";
-
-    open( $fh, ">", $filename ) or die "unable to open $filename", $!;
-    print $fh $content;
-    close $fh;
+    return $content;
 }
 
 1;

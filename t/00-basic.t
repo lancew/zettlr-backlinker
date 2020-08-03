@@ -53,6 +53,13 @@ subtest 'Zettlr::Backlinker->get_file_list' => sub {
         'Returns the correct list of files';
 };
 
+subtest 'Zettlr::Backlinker->get_file_contents' => sub {
+    is $CLASS->get_file_contents('20200802022902 another file.md'),
+    $file_2_content,
+    'File contents read successfully';
+};
+
+
 subtest 'Zettlr::Backlinker->get_links' => sub {
     is $CLASS->get_links($file_1_content),
         [ '20200716164925', '20200802022902', '20200716164911' ],
