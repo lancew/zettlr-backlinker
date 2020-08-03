@@ -2,6 +2,9 @@ sudo: false
 language: perl
 perl:
    - 'blead'
+   - "5.30"
+   - "5.28"
+   - "5.26"
    - '5.20'
    - '5.18'
    - '5.16'
@@ -18,7 +21,7 @@ before_install:
    - git config --global user.name "TravisCI"
    - git config --global user.email $HOSTNAME":not-for-mail@travis-ci.org"
 install:
-   - cpanm --quiet --notest --skip-satisfied Devel::Cover::Report::Coveralls Test2::V0 Test::MockFile List::More::Utils Moo
+   - cpanm --quiet --notest --skip-satisfied Devel::Cover::Report::Coveralls Test2::V0 Test::MockFile List::MoreUtils Moo
 script:
    - PERL5OPT=-MDevel::Cover prove -lv
 after_success:
