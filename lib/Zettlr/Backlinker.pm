@@ -1,4 +1,5 @@
 package Zettlr::Backlinker;
+# ABSTRACT: Create backlinks in a directory of Zettlr files
 
 use strict;
 use warnings;
@@ -78,8 +79,8 @@ sub insert_backlinks {
     $content .= "\n";
     $content .= "Zettlr-Backlinks:\n";
     for my $link (@link_ids) {
-    # TODO: add the file title after the link
-    #       i.e. "[[12345678901234]] some thing interesting"
+        # TODO: add the file title after the link
+        #       i.e. "[[12345678901234]] some thing interesting"
         $content .= " * [[$link]]\n";
     }
     $content .= "\n";
