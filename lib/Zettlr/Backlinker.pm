@@ -4,10 +4,11 @@ package Zettlr::Backlinker;
 use strict;
 use warnings;
 
+use File::Find;
 use List::MoreUtils 'uniq';
 use Moo;
 
-sub get_backlinks_from_files {
+sub get_links_from_files {
     my ( $self, @filenames ) = @_;
     my %backlinks;
 
@@ -52,7 +53,7 @@ sub get_file_title {
     my ( $self, $filename ) = @_;
     my $output;
 
-    open( my $fh, "<", $filename ) or die;
+    open( my $fh, "<", $filename ) or die "Unable to open $filename: $!";
     for my $line (<$fh>) {
         $line =~ s/^# //;
         chomp $line;
@@ -100,6 +101,40 @@ sub get_file_contents {
     $/ = "\n";
 
     return $content;
+}
+
+sub filename_from_linkid {
+    my ( $self, $linkid, $directory ) = @_;
+    my $files = $self->get_file_list($directory);
+
+    for my $file (@$files) {
+        return $file if $file =~ /$linkid/;
+    }
+    return undef;
+}
+
+sub backlinks_from_links {
+    my ( $self, $links) = @_;
+
+    my %backlinks;
+    for my $file (keys %$links) {
+        $file =~ m/(\d{14})/;
+        for my $link (@{$links->{$file}}) {
+            push @{$backlinks{$link}}, $1;
+        }
+    }
+    for my $link (keys %backlinks) {
+    use Data::Dumper;
+        my @backlinks = @{$backlinks{$link}};
+        @backlinks = sort @backlinks;
+        $backlinks{$link} = \@backlinks;
+    }
+
+
+
+
+    return \%backlinks;
+
 }
 
 1;
