@@ -74,7 +74,18 @@ sub insert_backlinks {
     for my $link (@link_ids) {
         # TODO: add the file title after the link
         #       i.e. "[[12345678901234]] some thing interesting"
-        $content .= " * [[$link]]\n";
+        $filename =~/^(.*)\d{14}/;
+        my $dir = $1 || '/foo';
+
+        my $backlinked_file = $self->filename_from_linkid($link, $dir);
+
+        my $title = '';
+        if ($backlinked_file) {
+            $title = ' ';
+            $title .= $self->get_file_title($backlinked_file) || '';
+        }
+
+        $content .= " * [[$link]]$title\n";
     }
     $content .= "\n";
 
@@ -92,7 +103,7 @@ sub get_file_contents {
     close $fh;
     $/ = "\n";
 
-    my $backlink_index = index( $content, "\n\nZettlr-Backlinks" );
+    my $backlink_index = index( $content, "Zettlr-Backlinks" );
 
     if ( $backlink_index > 0 ) {
         $content = substr( $content, 0, $backlink_index );

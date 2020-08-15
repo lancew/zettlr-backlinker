@@ -109,7 +109,7 @@ subtest 'Zettlr::Backlinker->get_file_title' => sub {
 
 };
 
-subtest 'Find file that a link refers to' => sub {
+subtest 'Zetter::Backlinker->filename_from_linkid' => sub {
     is $CLASS->filename_from_linkid( '11111111111111', '/foo' ),
         '/foo/11111111111111 some file.md',
         '[[11111111111111]] -> "111111111111111 some file.md"';
@@ -122,7 +122,7 @@ subtest 'Find file that a link refers to' => sub {
 subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
     $CLASS->insert_backlinks(
         '22222222222222 another file.md',
-        ( '20200716164925', '20200716164911' )
+        ( '11111111111111', '20200716164911' )
     );
 
     $/ = undef;
