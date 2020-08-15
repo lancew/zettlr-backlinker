@@ -133,7 +133,7 @@ subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
     $/ = "\n";
 
     is $content,
-        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
+        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
         'The backlinks were inserted properly, the first time';
 
     $CLASS->insert_backlinks(
@@ -148,7 +148,7 @@ subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
     $/ = "\n";
 
     is $content,
-        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
+        "# This is the second file\n#tag1 ~tag2\n\nParagraph one has no links.\n\n\n\n\nZettlr-Backlinks:\n * [[20200716164925]]\n * [[20200716164911]]\n\n",
         'The backlinks were inserted properly, the second time';
 
 };

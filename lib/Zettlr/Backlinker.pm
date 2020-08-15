@@ -10,20 +10,19 @@ use Moo;
 
 sub get_links_from_files {
     my ( $self, @filenames ) = @_;
-    my %backlinks;
+    my %links;
 
-    for my $filename (@filenames) {
-        if ( $filename =~ /\d{14}/ ) {
-            my $content = $self->get_file_contents($filename);
+    for my $file (@filenames) {
+        if ( $file =~ /\d{14}/ ) {
+            my $content = $self->get_file_contents($file);
 
-            my $links = $self->get_links($content);
+            my $link_ids = $self->get_links($content);
 
-            $backlinks{$filename} = $links;
+            $links{$file} = $link_ids;
         }
 
     }
-
-    return \%backlinks;
+    return \%links;
 }
 
 sub get_links {
@@ -70,14 +69,7 @@ sub insert_backlinks {
 
     my $content = $self->get_file_contents($filename);
 
-    #TODO: Magic number: "-1" means not found, i.e. links not already there
-    my $backlink_index = index( $content, "\nZettlr-Backlinks" );
-
-    if ( $backlink_index > 0 ) {
-        $content = substr( $content, 0, $backlink_index );
-    }
-
-    $content .= "\n";
+    $content .= "\n\n";
     $content .= "Zettlr-Backlinks:\n";
     for my $link (@link_ids) {
         # TODO: add the file title after the link
@@ -99,6 +91,12 @@ sub get_file_contents {
     my $content = <$fh>;
     close $fh;
     $/ = "\n";
+
+    my $backlink_index = index( $content, "\n\nZettlr-Backlinks" );
+
+    if ( $backlink_index > 0 ) {
+        $content = substr( $content, 0, $backlink_index );
+    }
 
     return $content;
 }
