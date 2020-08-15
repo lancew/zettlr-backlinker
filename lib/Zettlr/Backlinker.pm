@@ -114,24 +114,20 @@ sub filename_from_linkid {
 }
 
 sub backlinks_from_links {
-    my ( $self, $links) = @_;
+    my ( $self, $links ) = @_;
 
     my %backlinks;
-    for my $file (keys %$links) {
+    for my $file ( keys %$links ) {
         $file =~ m/(\d{14})/;
-        for my $link (@{$links->{$file}}) {
-            push @{$backlinks{$link}}, $1;
+        for my $link ( @{ $links->{$file} } ) {
+            push @{ $backlinks{$link} }, $1;
         }
     }
-    for my $link (keys %backlinks) {
-    use Data::Dumper;
-        my @backlinks = @{$backlinks{$link}};
+    for my $link ( keys %backlinks ) {
+        my @backlinks = @{ $backlinks{$link} };
         @backlinks = sort @backlinks;
         $backlinks{$link} = \@backlinks;
     }
-
-
-
 
     return \%backlinks;
 

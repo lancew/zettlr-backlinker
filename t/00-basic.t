@@ -155,19 +155,18 @@ subtest 'Zettlr::Backlinker->insert_backlinks' => sub {
 
 subtest 'backlinks_from_links' => sub {
     my $links = {
-        '11111111111111 some file.md' => [
-            '20200716164925', '20200802022902',
-        ],
+        '11111111111111 some file.md' =>
+            [ '20200716164925', '20200802022902', ],
         '22222222222222 another file.md' => ['20200802022902'],
     };
     my $backlinks = {
         '20200716164925' => ['11111111111111'],
-        '20200802022902' => ['11111111111111','22222222222222'],
-        };
+        '20200802022902' => [ '11111111111111', '22222222222222' ],
+    };
 
-        is $CLASS->backlinks_from_links($links),
+    is $CLASS->backlinks_from_links($links),
         $backlinks,
-        'Convert links to backlinks AOK'
+        'Convert links to backlinks AOK';
 
 };
 
