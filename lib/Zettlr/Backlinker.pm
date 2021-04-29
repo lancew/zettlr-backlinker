@@ -33,16 +33,29 @@ sub get_links {
 }
 
 sub number_of_links_out {
-    my ($self, $filename) = @_;
+    my ( $self, $filename ) = @_;
 
     my $links = $self->get_links_from_files($filename);
 
-
-    return scalar(@{$links->{$filename}});
+    return scalar( @{ $links->{$filename} } );
 }
 
+sub number_of_links_in {
+    my ( $self, $filename, @file_list ) = @_;
 
+    my $links = $self->get_links_from_files(@file_list);
+    delete $links->{$filename};
 
+    $filename =~ m/^(\d+)/;
+    my $occurances = 0;
+    for my $key ( keys %$links ) {
+        for my $link ( @{ $links->{$key} } ) {
+            $occurances++ if $link eq $1;
+        }
+
+    }
+    return $occurances;
+}
 
 sub get_file_list {
     my ( $self, $directory ) = @_;

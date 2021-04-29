@@ -9,15 +9,16 @@ $Data::Dumper::Indent   = 2;
 
 my $ZB = Zettlr::Backlinker->new;
 
-my $files     = $ZB->get_file_list('/home/lancew/zettel');
+my $files = $ZB->get_file_list('/home/lancew/zettel');
 
 for my $file (@$files) {
-    if ($ZB->number_of_links_out($file) == 0) {
+    if ( $ZB->number_of_links_out($file) == 0 ) {
         print "NO LINKS OUT: $file\n";
     }
 
-    # dies any file link to this file?
-    # if not, say so.
+    if ( $ZB->number_of_links_in( $file, $files ) == 0 ) {
+        print "NO LINKS IN: $file\n";
+    }
 
 }
 

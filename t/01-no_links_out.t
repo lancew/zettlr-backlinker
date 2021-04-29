@@ -61,12 +61,26 @@ my $mock_dir = Test::MockFile->dir( '/foo', \@file_list, { mode => 0700 } );
 
 subtest 'number_of_links_out' => sub {
     is $CLASS->number_of_links_out('11111111111111 some file.md'),
-        4, 'Has 4 unique links in it, 5 in total as one is repeated';
+        4, 'Has 4 unique links in it, 5 in total as one is repeate2d';
     is $CLASS->number_of_links_out('22222222222222 another file.md'),
         0, 'Has no links in it';
     is $CLASS->number_of_links_out('33333333333333 third file.md'),
         2, 'Has 2 links in it';
 };
 
+subtest 'number_of_links_in' => sub {
+    is $CLASS->number_of_links_in(
+        '11111111111111 some file.md', @file_list
+        ),
+        1, 'Only the third file links to file 1';
+    is $CLASS->number_of_links_in(
+        '22222222222222 another file.md', @file_list
+        ),
+        2, 'Both the other files link to this file';
+    is $CLASS->number_of_links_in(
+        '33333333333333 third file.md', @file_list
+        ),
+        0, 'Neither of the other files link to this file';
+};
 done_testing;
 
