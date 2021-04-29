@@ -32,6 +32,18 @@ sub get_links {
     return \@link_ids;
 }
 
+sub number_of_links_out {
+    my ($self, $filename) = @_;
+
+    my $links = $self->get_links_from_files($filename);
+
+
+    return scalar(@{$links->{$filename}});
+}
+
+
+
+
 sub get_file_list {
     my ( $self, $directory ) = @_;
     my @files;
@@ -64,36 +76,6 @@ sub get_file_title {
     return $output;
 }
 
-sub insert_backlinks {
-    my ( $self, $filename, @link_ids ) = @_;
-
-    my $content = $self->get_file_contents($filename);
-
-    $content .= "\n\n";
-    $content .= "Zettlr-Backlinks:\n";
-    for my $link (@link_ids) {
-        # TODO: add the file title after the link
-        #       i.e. "[[12345678901234]] some thing interesting"
-        $filename =~/^(.*)\d{14}/;
-        my $dir = $1 || '/foo';
-
-        my $backlinked_file = $self->filename_from_linkid($link, $dir);
-
-        my $title = '';
-        if ($backlinked_file) {
-            $title = ' ';
-            $title .= $self->get_file_title($backlinked_file) || '';
-        }
-
-        $content .= " * [[$link]]$title\n";
-    }
-    $content .= "\n";
-
-    open( my $fh, ">", $filename ) or die "unable to open $filename", $!;
-    print $fh $content;
-    close $fh;
-}
-
 sub get_file_contents {
     my ( $self, $filename ) = @_;
 
@@ -120,26 +102,6 @@ sub filename_from_linkid {
         return $file if $file =~ /$linkid/;
     }
     return undef;
-}
-
-sub backlinks_from_links {
-    my ( $self, $links ) = @_;
-
-    my %backlinks;
-    for my $file ( keys %$links ) {
-        $file =~ m/(\d{14})/;
-        for my $link ( @{ $links->{$file} } ) {
-            push @{ $backlinks{$link} }, $1;
-        }
-    }
-    for my $link ( keys %backlinks ) {
-        my @backlinks = @{ $backlinks{$link} };
-        @backlinks = sort @backlinks;
-        $backlinks{$link} = \@backlinks;
-    }
-
-    return \%backlinks;
-
 }
 
 1;

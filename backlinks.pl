@@ -9,19 +9,15 @@ $Data::Dumper::Indent   = 2;
 
 my $ZB = Zettlr::Backlinker->new;
 
-my $files     = $ZB->get_file_list('/home/lancew/zettelkasten');
-my $links     = $ZB->get_links_from_files(@$files);
-my $backlinks = $ZB->backlinks_from_links($links);
+my $files     = $ZB->get_file_list('/home/lancew/zettel');
 
-for my $link_id ( keys %$backlinks ) {
-
-    my $file
-        = $ZB->filename_from_linkid( $link_id, '/home/lancew/zettelkasten' );
-
-    if ( @{ $backlinks->{$link_id} } > 0 ) {
-        $ZB->insert_backlinks( $file, @{ $backlinks->{$link_id} } );
-
+for my $file (@$files) {
+    if ($ZB->number_of_links_out($file) == 0) {
+        print "NO LINKS OUT: $file\n";
     }
+
+    # dies any file link to this file?
+    # if not, say so.
 
 }
 
